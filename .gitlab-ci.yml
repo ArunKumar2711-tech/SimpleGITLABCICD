@@ -1,0 +1,24 @@
+image: openjdk:17-jdk-slim
+
+stages:
+  - test
+
+variables:
+  CHROME_DRIVER_VERSION: "128.0.6613.137"
+  CHROME_DRIVER_URL: "https://storage.googleapis.com/chrome-for-testing-public/${CHROME_DRIVER_VERSION}/linux64/chromedriver-linux64.zip"
+
+test:
+  stage: test
+  script:
+    - apt-get update && apt-get install -y wget curl unzip
+    - curl -sSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o chrome.deb
+    - apt-get install -y ./chrome.deb
+    - google-chrome --version
+    - wget ${CHROME_DRIVER_URL} -O chromedriver-linux64.zip
+    - unzip chromedriver-linux64.zip
+    - mv chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
+    - chmod +x /usr/local/bin/chromedriver
+    - ls -l /usr/local/bin/chromedriver
+    - apt-get install -y maven
+    - mvn -version
+    - mvn test
